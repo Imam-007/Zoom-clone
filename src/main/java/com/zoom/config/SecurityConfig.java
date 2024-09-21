@@ -47,9 +47,7 @@ public class SecurityConfig {
                                         .requestMatchers("/joinMeeting/**").permitAll()
                                         .requestMatchers("/user/login").permitAll()
                                         .requestMatchers("/user/signUp").permitAll()
-                                        .requestMatchers("/images/**", "/css/**", "/js/**").permitAll()  // Allow access to static resources
-//                                .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
-//                                .requestMatchers(HttpMethod.POST,"/api/sessions/**").permitAll()
+                                        .requestMatchers("/images/**").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .formLogin(form ->
@@ -67,7 +65,6 @@ public class SecurityConfig {
 
         http.httpBasic(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
-        System.out.println("Security configuration applied successfully.");
         return http.build();
     }
 }
