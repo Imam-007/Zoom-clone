@@ -1,7 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <title>Zoom</title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
 
@@ -9,15 +8,17 @@
         #root {
             width: 100vw;
             height: 100vh;
-            }
+        }
     </style>
 </head>
-
 
 <body>
 <div id="root"></div>
 </body>
+<!-- Add whiteboard plugins before UIKits SDK -->
+<script src="https://unpkg.com/zego-superboard-web@2.15.3/index.js"></script>
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+
 <script>
     window.onload = function () {
         function getUrlParams(url) {
@@ -27,13 +28,7 @@
             return result;
         }
 
-
-            // Generate a Token by calling a method.
-            // @param 1: appID
-            // @param 2: serverSecret
-            // @param 3: Room ID
-            // @param 4: User ID
-            // @param 5: Username
+        // Generate a Token by calling a method.
         const roomID = getUrlParams(window.location.href)['roomID'] || (Math.floor(Math.random() * 10000) + "");
         const userID = Math.floor(Math.random() * 10000) + "";
         const userName = "userName" + userID;
@@ -41,31 +36,36 @@
         const serverSecret = "c5505e80b10097f47b28f362002e28f8";
         const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
 
+        // Create Zego UIKit Prebuilt Instance
+        const zp = ZegoUIKitPrebuilt.create(kitToken);
 
-            const zp = ZegoUIKitPrebuilt.create(kitToken);
-            zp.joinRoom({
-                container: document.querySelector("#root"),
-                sharedLinks: [{
-                    name: 'Personal link',
-                    url: window.location.protocol + '//' + window.location.host  + window.location.pathname + '?roomID=' + roomID,
-                }],
-                scenario: {
-                    mode: ZegoUIKitPrebuilt.VideoConference,
-                },
+        // Add whiteboard plugin
+        zp.addPlugins({ ZegoSuperBoardManager });
 
-                   turnOnMicrophoneWhenJoining: false,
-                   turnOnCameraWhenJoining: false,
-                   showMyCameraToggleButton: true,
-                   showMyMicrophoneToggleButton: true,
-                   showAudioVideoSettingsButton: true,
-                   showScreenSharingButton: true,
-                   showTextChat: true,
-                   showUserList: true,
-                   maxUsers: 50,
-                   layout: "Grid",
-                   showLayoutButton: true,
-
-                });
+        // Join room and enable whiteboard
+        zp.joinRoom({
+            container: document.querySelector("#root"),
+            sharedLinks: [{
+                name: 'Personal link',
+                url: window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID,
+            }],
+            scenario: {
+                mode: ZegoUIKitPrebuilt.VideoConference,
+            },
+            turnOnMicrophoneWhenJoining: false,
+            turnOnCameraWhenJoining: false,
+            showMyCameraToggleButton: true,
+            showMyMicrophoneToggleButton: true,
+            showAudioVideoSettingsButton: true,
+            showScreenSharingButton: true,
+            showTextChat: true,
+            showUserList: true,
+            maxUsers: 50,
+            layout: "Grid",
+            showLayoutButton: true,
+            // Enable the whiteboard
+            showWhiteboard: true, // You can set this option to show the whiteboard
+        });
     }
 </script>
 

@@ -21,6 +21,9 @@ public class SecurityConfig {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private OAuthAuthenticationSuccessHandler handler;
+
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
         JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
@@ -48,6 +51,7 @@ public class SecurityConfig {
                                         .requestMatchers("/user/login").permitAll()
                                         .requestMatchers("/user/signUp").permitAll()
                                         .requestMatchers("/images/**").permitAll()
+                                        .requestMatchers("/login/oauth2/**").permitAll()  // Allow OAuth2 URLs
                                         .anyRequest().authenticated()
                 )
                 .formLogin(form ->
@@ -56,6 +60,10 @@ public class SecurityConfig {
                                 .loginProcessingUrl("/authenticateTheUser")
                                 .defaultSuccessUrl("/userDashboard")
                                 .permitAll()
+                )
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/login")
+                        .successHandler(handler)
                 )
                 .logout(logout -> logout.permitAll()
                         .logoutSuccessUrl("/")
