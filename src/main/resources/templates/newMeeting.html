@@ -9,12 +9,33 @@
             width: 100vw;
             height: 100vh;
         }
+
+        .overlay-btn {
+            border: none;
+            border-radius: 5px;
+            background-color: #ee0943;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px; /* Added some margin for better spacing */
+        }
+
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10; /* Ensure the controls are above other elements */
+        }
     </style>
 </head>
 
 <body>
 <div id="root"></div>
-</body>
+<div id="controls">
+    <button id="startBtn" class="overlay-btn">Start Recording</button>
+    <button id="stopBtn" class="overlay-btn" disabled>Stop Recording</button>
+</div>
 <!-- Add whiteboard plugins before UIKits SDK -->
 <script src="https://unpkg.com/zego-superboard-web@2.15.3/index.js"></script>
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
@@ -67,6 +88,64 @@
             showWhiteboard: true, // You can set this option to show the whiteboard
         });
     }
-</script>
 
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    let mediaRecorder;
+    let chunks = [];
+
+    startBtn.addEventListener('click', async () => {
+        try {
+            // Request screen and audio together
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true // Screen video
+            });
+
+            const audioStream = await navigator.mediaDevices.getUserMedia({
+                audio: true // Audio from microphone
+            });
+
+            // Combine the screen video and microphone audio into one stream
+            const combinedStream = new MediaStream([
+                ...screenStream.getVideoTracks(),
+                ...audioStream.getAudioTracks()
+            ]);
+
+            mediaRecorder = new MediaRecorder(combinedStream);
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    chunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const filename = window.prompt("File name", "video");
+                const dataDownloadUrl = URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = dataDownloadUrl;
+                a.download = `${filename}.webm`;
+                a.click();
+                URL.revokeObjectURL(dataDownloadUrl);
+                chunks = [];
+            };
+
+            mediaRecorder.start(250);
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        } catch (error) {
+            console.error('Error starting screen recording:', error);
+        }
+    });
+
+    stopBtn.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        }
+    });
+</script>
+</body>
 </html>

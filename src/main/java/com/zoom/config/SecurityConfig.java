@@ -51,7 +51,7 @@ public class SecurityConfig {
                                         .requestMatchers("/user/login").permitAll()
                                         .requestMatchers("/user/signUp").permitAll()
                                         .requestMatchers("/images/**").permitAll()
-                                        .requestMatchers("/login/oauth2/**").permitAll()  // Allow OAuth2 URLs
+                                        .requestMatchers("/login/oauth2/**").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .formLogin(form ->
