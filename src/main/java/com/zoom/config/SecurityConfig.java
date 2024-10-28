@@ -29,7 +29,7 @@ public class SecurityConfig {
         JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
         jdbcUserDetailsManager.setUsersByUsernameQuery(
-                "select name,password ,true from users where name = ?"
+                "select email,password ,true from users where email = ?"
         );
         jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
                 "select username,role from roles where username=?"

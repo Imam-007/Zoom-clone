@@ -201,7 +201,7 @@ h2 {
 
 <body>
 <header>
-    <p>Hello, <strong th:text="${loggedInUser.email}">User</strong>!</p>
+    <p>Hello, <strong th:text="${loggedInUser.name}">User</strong>!</p>
 </header>
 <div class="main">
     <div class="container">
@@ -232,7 +232,7 @@ h2 {
                     <th:block th:each="meeting : ${scheduledMeetings}">
                         <div class="meetingbtn">
                             <li
-                                    th:text="${meeting.title + ' - ' + meeting.dateTime + ' - ' + meeting.host.email}"
+                                    th:text="${meeting.title + ' - ' + meeting.dateTime + ' - ' + meeting.host.name}"
                             />
 
                             <form th:action="@{/meeting-controller/startScheduledMeeting}">
@@ -256,7 +256,7 @@ h2 {
                     <th:block th:each="invite : ${invitedMeetings}">
                         <div class="meetingbtn">
                             <li
-                                    th:text="${invite.key.title + ' - ' + invite.key.dateTime + ' - ' + invite.key.host.email}"
+                                    th:text="${invite.key.title + ' - ' + invite.key.dateTime + ' - ' + invite.key.host.name}"
                             />
                             <div class="meetingbtn">
                                 <form th:action="@{/meeting-controller/acceptMeetingInvite}" method="post">

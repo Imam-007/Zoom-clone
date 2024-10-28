@@ -28,6 +28,7 @@ public class UserController {
 
     @GetMapping("/login")
     public String loginPage(Model model, @RequestParam(required = false) String error) {
+        System.out.println(model+" error here "+ error);
         if (error != null) {
             model.addAttribute("error", "Invalid username or password");
         }
